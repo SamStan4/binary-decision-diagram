@@ -113,21 +113,21 @@ def edge_rule(x_node, y_node):
 #   function name       : make_32_node_BDD()
 #   functional purpose  : this function will create a 32 (0 - 32) node BDD representation of a graph with edge rule: 
 #                         there is an edge from node i to node j iff (i + 3)%32 = j%32 or (i + 8)%32 = j%32.
-#   inputs              : int
+#   inputs              : list
 #   outputs             : a boolean decision diagram
 #   preconditions       : none
 #   postconditions      : none
 #   programmer          : Sam Stanley
 
-def make_32_node_BDD():
+def make_BDD(num_set):
 
     temp_boolean_formula = None
     local_boolean_formula = None
 
-    for i in range(0, 32, 1):
-        for j in range(0, 32, 1):
-            if (edge_rule(i, j)):
-                temp_boolean_formula = make_edge_bool_formula(i, j)
+    for i in range(0, len(num_set), 1):
+        for j in range(0, len(num_set), 1):
+            if (edge_rule(num_set[i], num_set[j])):
+                temp_boolean_formula = make_edge_bool_formula(num_set[i], num_set[j])
                 if (local_boolean_formula == None):
                     local_boolean_formula = temp_boolean_formula
                 else:
@@ -135,6 +135,50 @@ def make_32_node_BDD():
 
     return expr2bdd(local_boolean_formula)
 
+#*********************************************************************************************************************************************#
+#   function name       : make_PRIME_BDD()
+#   functional purpose  : returns a bdd for the edge rule using only the prime nodes
+#   inputs              : none
+#   outputs             : BDD
+#   preconditions       : none
+#   postconditions      : none
+#   programmer          : Sam Stanley
+
+def make_PRIME_BDD():
+    node_list = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+    return make_BDD(node_list)
+
+#*********************************************************************************************************************************************#
+#   function name       : make_EVEN_BDD()
+#   functional purpose  : returns a bdd for the edge rule using only the even nodes
+#   inputs              : none
+#   outputs             : BDD
+#   preconditions       : none
+#   postconditions      : none
+#   programmer          : Sam Stanley
+
+def make_EVEN_BDD():
+    node_list = [0, 2, 4, 6, 8,
+                 10, 12, 14, 16, 18,
+                 20, 22, 24, 26, 28,
+                 30]
+    return make_BDD(node_list)
+
+#*********************************************************************************************************************************************#
+#   function name       : make_RR_BDD()
+#   functional purpose  : returns a bdd for the edge rule using all nodes { 0, 1, ... , 31}
+#   inputs              : none
+#   outputs             : BDD
+#   preconditions       : none
+#   postconditions      : none
+#   programmer          : Sam Stanley
+
+def make_RR_BDD():
+    node_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 
+                 30, 31]
+    return make_BDD(node_list)
 
 
 #*********************************************************************************************************************************************#
@@ -147,7 +191,17 @@ def make_32_node_BDD():
 #   programmer          : Sam Stanley
 
 def clear_terminal():
-    os.system('cls' if os.name == 'nt' else 'clear')
+
+    if os.name == "nt": # windows
+        os.system('cls')
+    else: # mac / linux
+        os.system('clear')
+
+def pause():
+    if os.name == 'nt': # windows
+        os.system('pause')
+    else: # mac/linux
+        input('Press Enter to continue...')
 
 #*********************************************************************************************************************************************#
 #   function name       : main_menu()
@@ -158,21 +212,37 @@ def clear_terminal():
 #   postconditions      : none
 #   programmer          : Sam Stanley
 
+def print_title():
+        clear_terminal()
+        print(colors.F_MAGENTA)
+        print("  ___     ___.        .___  .___  ___     \n / _ \_/\ \_ |__    __| _/__| _/ / _ \_/\ \n \/ \___/  | __ \  / __ |/ __ |  \/ \___/ \n           | \_\ \/ /_/ / /_/ |           \n           |___  /\____ \____ |           \n               \/      \/    \/           \n")
+        print(colors.RESET)
+
+
 def main_menu():
 
     x = True
-    list_decisions = { 1 }
+    list_decisions = [ 1, 2, 3, 4, 5, 6, 7 ]
 
     while (x):
 
-        clear_terminal()
+        print_title()
+        print(colors.F_GREEN)
+        #print(colors.B_CYAN + "---Main Menu---\n" + colors.RESET)
 
-        print("---Main Menu---\n")
+        print("enter '1' to print the RR BDD")
+        print("enter '2' to print the EVEN BDD")
+        print("enter '3' to print the PRIME BDD")
+        print("enter '4' to run test cases on RR, EVEN, and PRIME BDDs")
+        print("enter '5' to run test cases on RR2")
+        print("enter '6' to run test cases on RR star")
+        print("enter '7' to exit the program")
 
-        print("enter '1' to build the BDD and run the program\n")
+        print(colors.RESET)
+
 
         try: # try block to that this input doesnt crash the program
-            decision = int(input("Enter here: "))
+            decision = int(input("\nEnter here: "))
 
             if decision in list_decisions:
                 x = False
@@ -181,6 +251,36 @@ def main_menu():
 
     return decision
 
+#*********************************************************************************************************************************************#
+#   function name       : print_BDD()
+#   functional purpose  : this function will accept a BDD and print it to the terminal
+#   inputs              : bdd
+#   outputs             : none
+#   preconditions       : input is a BDD
+#   postconditions      : none
+#   programmer          : Sam Stanley
+
+def print_BDD(target_bdd):
+    print_title()
+    print(colors.F_CYAN)
+    print(bdd2expr(target_bdd))
+    print(colors.RESET)
+
+def RR_tests(RR_BDD):
+    true_RR_list = list(RR_BDD.satisfy_all())
+
+    RR_27_3_test_case = {x_variables[0]: 0, x_variables[1]: 0, x_variables[2]: 0, x_variables[3]: 0, x_variables[4]: 0, x_variables[5]: 0,
+                         y_variables[0]: 0, y_variables[1]: 0, y_variables[2]: 0, y_variables[3]: 0, y_variables[4]: 1, y_variables[5]: 1}
+
+    print("Satisfying Combinations:")
+    print(true_RR_list)
+    print("Test Case:")
+    print(RR_27_3_test_case)
+
+    if RR_27_3_test_case in true_RR_list:
+        print("yes")
+    else:
+        print("no")                
 #*********************************************************************************************************************************************#
 #   function name       : main()
 #   functional purpose  : main routine, like in c/c++
@@ -191,34 +291,39 @@ def main_menu():
 #   programmer          : Sam Stanley
 
 def main():
-    decision = main_menu()
+    RR_BDD = make_RR_BDD()
+    EVEN_BDD = make_EVEN_BDD()
+    PRIME_BDD = make_PRIME_BDD()
 
-    if (decision == 1):
-        test_BDD = make_32_node_BDD()
+    decision = 0
 
-    #print(bdd2expr(test_BDD))
+    while (decision != 7):
+        decision = main_menu()
 
-    smoothing_vars = test_BDD.smoothing()
-
-    #print(bdd2expr(smoothing_vars))
-
-    print("Smoothing Variables:", smoothing_vars)
-
-
-    #esult = test_BDD.
-
-    #my_formula = x_variables[0] & y_variables[0]
-
-    #print(my_formula)
+        if (decision == 1):
+            print_BDD(RR_BDD)
+        elif (decision == 2):
+            print_BDD(EVEN_BDD)
+        elif (decision == 3):
+            print_BDD(PRIME_BDD)
+        elif (decision == 4):
+            RR_tests(RR_BDD)
+        elif (decision == 5):
+            print("running test cases on RR2 BDD")
+        elif (decision == 6):
+            print("running test cases on RRstar BDD")
+        elif (decision == 7):
+            break
         
-    #bool_for = make_edge_bool_formula(11, 6)
+        pause()
 
-    #print(bool_for)
+        #RR_BDD.compose(RR_BDD)
 
+    clear_terminal()
 
+    
 
-
-
+    
 #*********************************************************************************************************************************************#
 
 main()
