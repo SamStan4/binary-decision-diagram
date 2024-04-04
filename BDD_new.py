@@ -43,7 +43,7 @@ def pause():
     if os.name == 'nt': # windows
         os.system('pause')
     else: # mac/linux
-        input('Press Enter to continue...')
+        input("Press " + colors.B_MAGENTA + "Enter" + colors.RESET + " to continue...")
 
 def print_title():
         clear_terminal()
@@ -88,16 +88,18 @@ def main():
     decision = 0
 
     RR_BDD = make_RR_BDD()
+    EVEN_BDD = make_EVEN_BDD()
+    PRIME_BDD = make_PRIME_BDD()
 
     while (decision != 8):
         decision = main_menu()
 
         if (decision == 1):
-            print("option one")
+            print_RR_BDD(RR_BDD)
         elif (decision == 2):
-            print("option two")
+            print_EVEN_BDD(EVEN_BDD)
         elif (decision == 3):
-            print("option three")
+            print_prime_BDD(PRIME_BDD)
         elif (decision == 4):
             print("option four")
         elif (decision == 5):
@@ -119,6 +121,24 @@ def main():
 #   preconditions       : none
 #   postconditions      : none
 #   programmer          : Sam Stanley
+
+def print_RR_BDD(RR_BDD):
+    clear_terminal()
+    print(colors.F_MAGENTA)
+    print("  ___                     ___.        .___  .___  ___     \n / _ \_/\ ______________  \_ |__    __| _/__| _/ / _ \_/\ \n \/ \___/ \_  __ \_  __ \  | __ \  / __ |/ __ |  \/ \___/ \n           |  | \/|  | \/  | \_\ \/ /_/ / /_/ |           \n           |__|   |__|     |___  /\____ \____ |           \n                               \/      \/    \/           \n")
+    print(colors.F_GREEN + str(bdd2expr(RR_BDD)) + "\n" + colors.RESET)
+
+def print_EVEN_BDD(EVEN_BDD):
+    clear_terminal()
+    print(colors.F_MAGENTA)
+    print("  ___                                 ___.        .___  .___  ___     \n / _ \_/\   _______  __ ____   ____   \_ |__    __| _/__| _/ / _ \_/\ \n \/ \___/ _/ __ \  \/ // __ \ /    \   | __ \  / __ |/ __ |  \/ \___/ \n          \  ___/\   /\  ___/|   |  \  | \_\ \/ /_/ / /_/ |           \n           \___  >\_/  \___  >___|  /  |___  /\____ \____ |           \n               \/          \/     \/       \/      \/    \/           \n")
+    print(colors.F_GREEN + str(bdd2expr(EVEN_BDD)) + "\n" + colors.RESET)
+
+def print_prime_BDD(PRIME_BDD):
+    clear_terminal()
+    print(colors.F_MAGENTA)
+    print("  ___                  .__                 ___.        .___  .___  ___     \n / _ \_/\ _____________|__| _____   ____   \_ |__    __| _/__| _/ / _ \_/\ \n \/ \___/ \____ \_  __ \  |/     \_/ __ \   | __ \  / __ |/ __ |  \/ \___/ \n          |  |_> >  | \/  |  Y Y  \  ___/   | \_\ \/ /_/ / /_/ |           \n          |   __/|__|  |__|__|_|  /\___  >  |___  /\____ \____ |           \n          |__|                  \/     \/       \/      \/    \/           \n")
+    print(colors.F_GREEN + str(bdd2expr(PRIME_BDD)) + "\n" + colors.RESET)
 
 def edge_rule(x_node, y_node):
     if ((((x_node + 3) % 32) == (y_node % 32)) or (((x_node + 8) % 32) == (y_node % 32))):
@@ -204,5 +224,56 @@ def evaluate_RR_BDD(RR_BDD, num1, num2):
         if (i == xy_bools):
             return True
     return False
+
+def make_EVEN_edge(num):
+    y_table = get_Y_dictionary(num)
+    fomula = None
+    if (y_table[y_variables[0]] == 1):
+        formula = y_variables[0]
+    else:
+        formula = ~y_variables[0]
+    for i in range(1, len(y_variables), 1):
+        if (y_table[y_variables[i]] == 1):
+            formula &= y_variables[i]
+        else:
+            formula &= ~y_variables[i]
+    return formula
+
+def make_EVEN_BDD():
+    node_list = [0, 2, 4, 6, 8,
+                 10, 12, 14, 16, 18,
+                 20, 22, 24, 26, 28,
+                 30]
+    EVEN_formula = None
+    for i in node_list:
+        if (EVEN_formula == None):
+            EVEN_formula = make_EVEN_edge(i)
+        else:
+            EVEN_formula |= make_EVEN_edge(i)
+    return expr2bdd(EVEN_formula)
+
+def make_PRIME_edge(num):
+    x_table = get_X_dictionary(num)
+    formua = None
+    if (x_table[x_variables[0]] == 1):
+        formula = x_variables[0]
+    else:
+        formula = ~x_variables[0]
+    for i in range(1, len(x_variables), 1):
+        if (x_table[x_variables[i]] == 1):
+            formula &= x_variables[i]
+        else:
+            formula &= ~x_variables[i]
+    return formula
+
+def make_PRIME_BDD():
+    node_list = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+    PRIME_formula = None
+    for i in node_list:
+        if (PRIME_formula == None):
+            PRIME_formula = make_PRIME_edge(i)
+        else:
+            PRIME_formula |= make_PRIME_edge(i)
+    return expr2bdd(PRIME_formula)
 
 main()
