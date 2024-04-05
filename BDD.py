@@ -30,6 +30,7 @@ class colors:
 
 x_variables = [exprvar('x{}'.format(i)) for i in range(1, 6)]     # this will create the boolean variables that we are going to want 
 y_variables = [exprvar('y{}'.format(i)) for i in range(1, 6)]     # and format it in the form { x1, x2, ... , x6 } and { y1, y2, ... , y6 }
+z_variables = [exprvar('z{}'.format(i)) for i in range(1, 6)]     # for .compose()
 
 def clear_terminal() -> None:
 
@@ -349,6 +350,29 @@ def run_all_test_cases(RR_BDD : BinaryDecisionDiagram, EVEN_BDD : BinaryDecision
     run_PRIME_BDD_test_cases(PRIME_BDD)
     print()
 
-main()
+def make_RR2_BDD(RR_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
+    # we know that RR2 => RR compose RR, so lets code it
+    z_replace_y  = {
+        y_variables[0] : z_variables[0],
+        y_variables[1] : z_variables[1],
+        y_variables[2] : z_variables[2],
+        y_variables[3] : z_variables[3],
+        y_variables[4] : z_variables[4]
+    }
+    RR_replace_Y_Z = RR_BDD.compose({x_variables[0] : y_variables[0]})
+    #return RR_replace_Y_Z
+
+def make_RR2star_BDD(RR_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
+    return None
+
+#main()
+
+RR_test = make_RR_BDD()
+
+RR2_test = make_RR2_BDD(RR_test)
+
+# print(bdd2expr(RR2_test))
+
+
 
 # print(str('\u2200') + "u, (PRIME(u) " + str('\u2192') + " " + str('\u2203') + "v, (EVEN(v) " + str('\u2227') + " RR2star(u, v))")
