@@ -12,8 +12,8 @@ test_bdd = x_variables[0] & y_variables[0]
 
 print(bdd2expr(test_bdd))
 
-transition = { x_variables[0] : z_variables[0] }
+elims = [x_variables[0]]
 
-test_bdd = test_bdd.compose(transition)
+test_bdd = test_bdd.smoothing(elims)
 
 print(bdd2expr(test_bdd))
