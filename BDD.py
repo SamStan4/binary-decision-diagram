@@ -92,6 +92,7 @@ def main() -> None:
     EVEN_BDD = make_EVEN_BDD()
     PRIME_BDD = make_PRIME_BDD()
     RR2_BDD = make_RR2_BDD(RR_BDD)
+    RR2star_BDD = make_RR2star_BDD(RR2_BDD)
 
     while (decision != 9):
         decision = main_menu()
@@ -368,7 +369,6 @@ def run_all_test_cases(RR_BDD : BinaryDecisionDiagram, EVEN_BDD : BinaryDecision
     print()
 
 def make_RR2_BDD(RR_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
-    # we know that RR2 => RR compose RR, so lets code it
     z_list = [ z_variables[0], z_variables[1], z_variables[2], z_variables[3], z_variables[4] ]
     z_replace_y  = {
         y_variables[0] : z_variables[0],
@@ -389,8 +389,34 @@ def make_RR2_BDD(RR_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
     combo = combo.smoothing(z_list)
     return combo
 
-def make_RR2star_BDD(RR_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
-    return None
+def make_RR2star_BDD(RR2_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
+    z_list = [ z_variables[0], z_variables[1], z_variables[2], z_variables[3], z_variables[4] ]
+    z_replace_y  = {
+        y_variables[0] : z_variables[0],
+        y_variables[1] : z_variables[1],
+        y_variables[2] : z_variables[2],
+        y_variables[3] : z_variables[3],
+        y_variables[4] : z_variables[4] }
+    z_replace_x = {
+        x_variables[0] : z_variables[0],
+        x_variables[1] : z_variables[1],
+        x_variables[2] : z_variables[2],
+        x_variables[3] : z_variables[3],
+        x_variables[4] : z_variables[4] }
+
+    i = RR2_BDD
+    j = None
+    while True:
+        j = i
+        i = (i.compose(z_replace_x) & i.compose(z_replace_y)).smoothing(z_list) | j
+        if i.equivalent(j):
+            break
+
+    return i
+
+
+
+
 
 def evaluate_RR2_BDD(RR2_BDD : BinaryDecisionDiagram, num1 : int, num2 : int) -> bool:
     xy_edge = make_RR_edge(num1, num2)
@@ -401,9 +427,19 @@ def evaluate_RR2_BDD(RR2_BDD : BinaryDecisionDiagram, num1 : int, num2 : int) ->
             return True
     return False
 
-main()
+# main()
 
-# RR_test = make_RR_BDD()
+RR_test = make_RR_BDD()
+
+star = make_RR2star_BDD(RR_test)
+
+# print(evaluate_RR2_BDD(star, 27, 6))
+
+print(evaluate_RR2_BDD(RR_test, 6, 9))
+
+print(evaluate_RR2_BDD(star, 27, 9))
+
+print(bdd2expr(star))
 
 # RR2_test = make_RR2_BDD(RR_test)
 
