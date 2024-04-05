@@ -342,7 +342,12 @@ def run_RR_EVEN_PRIME_BDD_tests(RR_BDD : BinaryDecisionDiagram, EVEN_BDD : Binar
     print()
 
 def run_all_test_cases(RR_BDD : BinaryDecisionDiagram, EVEN_BDD : BinaryDecisionDiagram, PRIME_BDD : BinaryDecisionDiagram, RR2_BDD : BinaryDecisionDiagram) -> None:
-    run_RR_EVEN_PRIME_BDD_tests(RR_BDD, EVEN_BDD, PRIME_BDD)
+    clear_terminal()
+    print(colors.F_MAGENTA + "  ___       __                   __                                          ___     \n/ _ \_/\ _/  |_  ____   _______/  |_    ____ _____    ______ ____   ______ / _ \_/\ \n\/ \___/ \   __\/ __ \ /  ___/\   __\ _/ ___\\__  \  /  ___// __ \ /  ___/ \/ \___/ \n          |  | \  ___/ \___ \  |  |   \  \___ / __ \_\___ \\  ___/ \___ \           \n          |__|  \___  >____  > |__|    \___  >____  /____  >\___  >____  >          \n                    \/     \/              \/     \/     \/     \/     \/           \n" + colors.RESET)
+    run_RR_BDD_test_cases(RR_BDD)
+    run_EVEN_BDD_test_cases(EVEN_BDD)
+    run_PRIME_BDD_test_cases(PRIME_BDD)
+    print()
 
 main()
 
