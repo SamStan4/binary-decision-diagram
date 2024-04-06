@@ -408,6 +408,7 @@ def make_RR2star_BDD(RR2_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
     j = None
     while True:
         j = i
+        # print(bdd2expr(j))
         i = (i.compose(z_replace_x) & i.compose(z_replace_y)).smoothing(z_list) | j
         if i.equivalent(j):
             break
@@ -427,19 +428,19 @@ def evaluate_RR2_BDD(RR2_BDD : BinaryDecisionDiagram, num1 : int, num2 : int) ->
             return True
     return False
 
-# main()
+main()
 
-RR_test = make_RR_BDD()
+# RR_test = make_RR_BDD()
 
-star = make_RR2star_BDD(RR_test)
+# star = make_RR2star_BDD(RR_test)
 
-# print(evaluate_RR2_BDD(star, 27, 6))
+# # print(evaluate_RR2_BDD(star, 27, 6))
 
-print(evaluate_RR2_BDD(RR_test, 6, 9))
+# print(evaluate_RR2_BDD(RR_test, 6, 9))
 
-print(evaluate_RR2_BDD(star, 27, 9))
+# print(evaluate_RR2_BDD(star, 27, 9))
 
-print(bdd2expr(star))
+# print(bdd2expr(star))
 
 # RR2_test = make_RR2_BDD(RR_test)
 
