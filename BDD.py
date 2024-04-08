@@ -408,16 +408,12 @@ def make_RR2star_BDD(RR2_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
     j = None
     while True:
         j = i
-        # print(bdd2expr(j))
+        print(bdd2expr(j))
         i = (i.compose(z_replace_x) & i.compose(z_replace_y)).smoothing(z_list) | j
         if i.equivalent(j):
             break
 
     return i
-
-
-
-
 
 def evaluate_RR2_BDD(RR2_BDD : BinaryDecisionDiagram, num1 : int, num2 : int) -> bool:
     xy_edge = make_RR_edge(num1, num2)
@@ -428,9 +424,13 @@ def evaluate_RR2_BDD(RR2_BDD : BinaryDecisionDiagram, num1 : int, num2 : int) ->
             return True
     return False
 
-main()
+# main()
 
-# RR_test = make_RR_BDD()
+RR_test = make_RR_BDD()
+
+RR2_test = make_RR2_BDD(RR_test)
+
+RR2star_test = make_RR2star_BDD(RR2_test)
 
 # star = make_RR2star_BDD(RR_test)
 
