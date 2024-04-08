@@ -93,6 +93,7 @@ def main() -> None:
     PRIME_BDD = make_PRIME_BDD()
     RR2_BDD = make_RR2_BDD(RR_BDD)
     RR2star_BDD = make_RR2star_BDD(RR2_BDD)
+    STAT_A_BDD = make_statement_A(EVEN_BDD, PRIME_BDD, RR2star_BDD)
 
     while (decision != 9):
         decision = main_menu()
@@ -110,9 +111,9 @@ def main() -> None:
         elif (decision == 6):
             print("running test cases on RRstar BDD")
         elif (decision == 7):
-            print("running test cases on quantifier BDD")
+            evaluate_statement_a(STAT_A_BDD)
         elif (decision == 8):
-            run_all_test_cases(RR_BDD, EVEN_BDD, PRIME_BDD, RR2_BDD)
+            run_all_test_cases(RR_BDD, EVEN_BDD, PRIME_BDD, RR2_BDD, STAT_A_BDD)
         elif (decision == 9):
             break
         
@@ -359,13 +360,14 @@ def RR2_BDD_test_mask(RR2_BDD : BinaryDecisionDiagram) -> None:
     run_RR2_BDD_test_cases(RR2_BDD)
     print()
 
-def run_all_test_cases(RR_BDD : BinaryDecisionDiagram, EVEN_BDD : BinaryDecisionDiagram, PRIME_BDD : BinaryDecisionDiagram, RR2_BDD : BinaryDecisionDiagram) -> None:
+def run_all_test_cases(RR_BDD : BinaryDecisionDiagram, EVEN_BDD : BinaryDecisionDiagram, PRIME_BDD : BinaryDecisionDiagram, RR2_BDD : BinaryDecisionDiagram, STAT_A_BDD : BinaryDecisionDiagram) -> None:
     clear_terminal()
     print(colors.F_MAGENTA + "  ___       __                   __                                          ___     \n/ _ \_/\ _/  |_  ____   _______/  |_    ____ _____    ______ ____   ______ / _ \_/\ \n\/ \___/ \   __\/ __ \ /  ___/\   __\ _/ ___\\__  \  /  ___// __ \ /  ___/ \/ \___/ \n          |  | \  ___/ \___ \  |  |   \  \___ / __ \_\___ \\  ___/ \___ \           \n          |__|  \___  >____  > |__|    \___  >____  /____  >\___  >____  >          \n                    \/     \/              \/     \/     \/     \/     \/           \n" + colors.RESET)
     run_RR_BDD_test_cases(RR_BDD)
     run_EVEN_BDD_test_cases(EVEN_BDD)
     run_PRIME_BDD_test_cases(PRIME_BDD)
     run_RR2_BDD_test_cases(RR2_BDD)
+    evaluate_statement_a(STAT_A_BDD)
     print()
 
 def make_RR2_BDD(RR_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
@@ -408,7 +410,6 @@ def make_RR2star_BDD(RR2_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
     j = None
     while True:
         j = i
-        print(bdd2expr(j))
         i = (i.compose(z_replace_x) & i.compose(z_replace_y)).smoothing(z_list) | j
         if i.equivalent(j):
             break
@@ -424,28 +425,18 @@ def evaluate_RR2_BDD(RR2_BDD : BinaryDecisionDiagram, num1 : int, num2 : int) ->
             return True
     return False
 
-# main()
+def make_statement_A(EVEN_BDD : BinaryDecisionDiagram, PRIME_BDD : BinaryDecisionDiagram, RR2star_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
+    y_list = [ y_variables[0], y_variables[1], y_variables[2], y_variables[3], y_variables[4] ]
+    x_list = [ x_variables[0], x_variables[1], x_variables[2], x_variables[3], x_variables[4] ]    
+    result = EVEN_BDD & RR2star_BDD
+    result = result.smoothing(y_list)
+    result = (~PRIME_BDD) | result
+    result = ~result
+    result = result.smoothing(x_list)
+    result = ~result
+    return result
 
-RR_test = make_RR_BDD()
+def evaluate_statement_a(STAT_A_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
+    print(str('\u2200') + "u, (PRIME(u) " + str('\u2192') + " " + str('\u2203') + "v, (EVEN(v) " + str('\u2227') + " RR2star(u, v)) " + colors.B_GREEN + "Evaluates to:" + colors.RESET + " " + colors.B_BLUE + str(bdd2expr(STAT_A_BDD)) + colors.RESET)
 
-RR2_test = make_RR2_BDD(RR_test)
-
-RR2star_test = make_RR2star_BDD(RR2_test)
-
-# star = make_RR2star_BDD(RR_test)
-
-# # print(evaluate_RR2_BDD(star, 27, 6))
-
-# print(evaluate_RR2_BDD(RR_test, 6, 9))
-
-# print(evaluate_RR2_BDD(star, 27, 9))
-
-# print(bdd2expr(star))
-
-# RR2_test = make_RR2_BDD(RR_test)
-
-# # print(bdd2expr(RR2_test))
-
-# run_RR2_BDD_test_cases(RR2_test)
-
-# # print(str('\u2200') + "u, (PRIME(u) " + str('\u2192') + " " + str('\u2203') + "v, (EVEN(v) " + str('\u2227') + " RR2star(u, v))")
+main()
