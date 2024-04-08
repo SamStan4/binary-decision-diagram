@@ -54,7 +54,7 @@ def print_title() -> None:
 def main_menu() -> int:
 
     x = True
-    list_decisions = [ 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    list_decisions = [ 1, 2, 3, 4, 5, 6, 7, 8 ]
 
     while (x):
 
@@ -67,10 +67,9 @@ def main_menu() -> int:
         print("enter '3' to print the PRIME BDD")
         print("enter '4' to run test cases on RR, EVEN, and PRIME BDDs")
         print("enter '5' to run test cases on RR2")
-        print("enter '6' to run test cases on RR star")
-        print("enter '7' to run test cases on quantifier BDD")
-        print("enter '8' to run all test cases                   " + colors.RESET + colors.B_MAGENTA + "<-- TA choose this option"  + colors.RESET + colors.F_GREEN)
-        print("enter '9' to exit the program")
+        print("enter '6' to run test cases on quantifier BDD")
+        print("enter '7' to run all test cases                   " + colors.RESET + colors.B_MAGENTA + "<-- TA choose this option"  + colors.RESET + colors.F_GREEN)
+        print("enter '8' to exit the program")
 
         print(colors.RESET)
 
@@ -87,6 +86,8 @@ def main_menu() -> int:
 
 def main() -> None:
     decision = 0
+
+    print(colors.B_MAGENTA + "Loading BDD structures" + colors.RESET)
 
     RR_BDD = make_RR_BDD()
     EVEN_BDD = make_EVEN_BDD()
@@ -109,12 +110,10 @@ def main() -> None:
         elif (decision == 5):
             RR2_BDD_test_mask(RR2_BDD)
         elif (decision == 6):
-            print("running test cases on RRstar BDD")
+            evaluate_statement_a_mask(STAT_A_BDD)
         elif (decision == 7):
-            evaluate_statement_a(STAT_A_BDD)
-        elif (decision == 8):
             run_all_test_cases(RR_BDD, EVEN_BDD, PRIME_BDD, RR2_BDD, STAT_A_BDD)
-        elif (decision == 9):
+        elif (decision == 8):
             break
         
         pause()
@@ -436,7 +435,13 @@ def make_statement_A(EVEN_BDD : BinaryDecisionDiagram, PRIME_BDD : BinaryDecisio
     result = ~result
     return result
 
-def evaluate_statement_a(STAT_A_BDD : BinaryDecisionDiagram) -> BinaryDecisionDiagram:
-    print(str('\u2200') + "u, (PRIME(u) " + str('\u2192') + " " + str('\u2203') + "v, (EVEN(v) " + str('\u2227') + " RR2star(u, v)) " + colors.B_GREEN + "Evaluates to:" + colors.RESET + " " + colors.B_BLUE + str(bdd2expr(STAT_A_BDD)) + colors.RESET)
+def evaluate_statement_a(STAT_A_BDD : BinaryDecisionDiagram) -> None:
+    print(str('\u2200') + "u, (PRIME(u) " + str('\u2192') + " " + str('\u2203') + "v, (EVEN(v) " + str('\u2227') + " RR2star(u, v)) " + colors.B_GREEN + "Evaluates to:" + colors.RESET + " " + str(bdd2expr(STAT_A_BDD)) + colors.RESET)
+
+def evaluate_statement_a_mask(STAT_A_BDD : BinaryDecisionDiagram) -> None:
+    clear_terminal()
+    print(colors.F_MAGENTA + "  ___       __                   __                                          ___     \n/ _ \_/\ _/  |_  ____   _______/  |_    ____ _____    ______ ____   ______ / _ \_/\ \n\/ \___/ \   __\/ __ \ /  ___/\   __\ _/ ___\\__  \  /  ___// __ \ /  ___/ \/ \___/ \n          |  | \  ___/ \___ \  |  |   \  \___ / __ \_\___ \\  ___/ \___ \           \n          |__|  \___  >____  > |__|    \___  >____  /____  >\___  >____  >          \n                    \/     \/              \/     \/     \/     \/     \/           \n" + colors.RESET)
+    evaluate_statement_a(STAT_A_BDD)
+    print()
 
 main()
