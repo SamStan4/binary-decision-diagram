@@ -1,3 +1,3 @@
-# boolean decision diagram graph
+# binary decision diagram
 
 ## to run, use the command ./BDD.py
